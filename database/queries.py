@@ -130,11 +130,17 @@ class Pitches():
             p.playEndTime,
             p.pitchNumber,
             p.pitchData_endSpeed as endSpeed,
+            p.pitchData_startSpeed as startSpeed,
             p.pitchData_breaks_breakLength as breakLength,
             p.pitchData_breaks_breakAngle as breakAngle,
             p.pitchData_zone as zone,
             p.details_type_description as pitchType,
             p.details_call_description as result,
+            p.hitData_launchSpeed,
+            p.hitData_launchAngle,
+            p.hitData_totalDistance,
+            p.hitData_hardness,
+            p.hitData_location,
             m.batter_id,
             m.pitcher_id
         FROM
@@ -148,7 +154,7 @@ class Pitches():
                 and
                 p.gamePk=m.gamePk
         WHERE
-            p.details_call_description != 'Automatic Ball'
+            p.details_type_description != 'Automatic Ball'
             AND
             p.gamePk 
             IN
@@ -157,7 +163,11 @@ class Pitches():
             FROM
                 game
             WHERE
-                game_type = 'R');
+                game_type = 'R')
+            AND
+                p.details_type_description NOT IN ('Automatic Ball','Knuckle Ball', 'Eephus','Forkball')
+            AND 
+                p.details_type_description IS NOT NULL;
         """
         
         df = pd.DataFrame.from_records( db.query(q) )
